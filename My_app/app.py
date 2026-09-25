@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
@@ -5,11 +6,15 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Database
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todo.db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_PATH = os.path.join(BASE_DIR, "todo.db")
+
+print("DATABASE PATH:", DATABASE_PATH)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + DATABASE_PATH
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
-
 
 # Todo Model
 class Todo(db.Model):
@@ -98,11 +103,12 @@ def delete_todo(id):
 
     return redirect("/")
 
-
 if __name__ == "__main__":
 
     with app.app_context():
         db.create_all()
+        print("Database created successfully!")
+        print("Database file:", DATABASE_PATH)
 
     app.run(
         port=5001,
